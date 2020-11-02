@@ -78,7 +78,7 @@ export default {
       destinationList: [], //行き先リスト（上、右、下、左の順）
       accessBoardList: [null, null, null, null], //行き先に動かせるならtrue
       keepPiece: "", //コマを入れ替える際の避難場所
-      lastMove: { square: null, direction: null }, //一個前の動きを保存
+      lastMove: { square: null, direction: null }, //前回の動きを保存
     };
   },
   created() {
@@ -128,7 +128,7 @@ export default {
       }
     }
     },
-    //コマをクリックした際の処理
+    //コマをクリックした際に行き先を判定
     async selectPiece(squareId, destinations) {
       for (let i = 0; i < 4; i++) {
         const target = this.boardSquareList[squareId - 1];
@@ -146,9 +146,9 @@ export default {
       this.keepPiece = "";
       // console.log(this.accessBoardList);
     },
-    //行き先をクリックした際の処理
+    //行き先をクリックした際
     selectDirection(originId, squareId, directionId) {
-      switch (this.boardSquareList[squareId - 1]) {
+      switch (this.boardSquareList[squareId - 1]) { //行き先のコマの有無で分岐
         case "":
           this.boardSquareList[squareId - 1] =
             this.boardSquareList[originId - 1];
@@ -169,9 +169,9 @@ export default {
     },
     //行き先にコマがあった際の処理
     async movePiece(activeId, passiveId, directionId) {
-      const nextId = this.getNextSquare(passiveId, directionId);
-      const target = this.boardSquareList[passiveId - 1];
-      const destination = await this.boardSquareList[nextId - 1];
+      const nextId = this.getNextSquare(passiveId, directionId); //行き先のその先のマスの番号
+      const target = this.boardSquareList[passiveId - 1]; //行き先のマスにあるもの
+      const destination = await this.boardSquareList[nextId - 1]; //行き先のその先のマスにあるもの
       if (
         await judgeDestination(
           passiveId,
@@ -180,12 +180,12 @@ export default {
           this.lastMove,
           directionId
         )
-      ) {
+      ) { //行き先のコマが消失しない場合
         const keepPieceShelter = this.keepPiece;
         this.keepPiece = this.boardSquareList[activeId - 1];
         this.boardSquareList[activeId - 1] = keepPieceShelter;
         this.continuePiece(passiveId, nextId, target, directionId);
-      } else {
+      } else { //行き先のコマが消失する場合
         this.calcScore(passiveId);
         this.boardSquareList[passiveId - 1] =
           this.boardSquareList[activeId - 1];
@@ -206,7 +206,7 @@ export default {
           return id - 1;
       }
     },
-    //行き先のコマが消えない際の処理
+    //行き先のその先にコマがあればループ、無ければ移動のみ
     continuePiece(activeId, passiveId, target, directionId) {
       switch (this.boardSquareList[passiveId - 1]) {
         case "":
@@ -220,12 +220,12 @@ export default {
           break;
       }
     },
-    //コマ選択後に行き先以外をクリックした際の処理
+    //コマ選択を解除
     clearSelect() {
       this.accessBoardList = [null, null, null, null];
       this.selectPieceSituation = true;
     },
-    //点数が入った時
+    //得点処理して2になったら終了へ
     calcScore(lostPieceId) {
       const lost = this.boardSquareList[lostPieceId - 1];
       if (lost === "left") {
@@ -236,7 +236,7 @@ export default {
         this.gameSet = this.leftScore > 1 ? true : false;
       }
     },
-    //RESETボタンの処理
+    //RESETボタンで初期化へ
     resetGame() {
       this.gameSet = false;
     }

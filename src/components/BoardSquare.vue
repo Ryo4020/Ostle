@@ -46,14 +46,14 @@ export default {
   methods: {
     //コマを選択した際の処理
     selectPiece() {
-      const destinationList = [];
+      const destinationList = []; //隣接するマスの番号のリスト
       destinationList[0] = this.id - 5;
       destinationList[1] = this.id + 1;
       destinationList[2] = this.id + 5;
       destinationList[3] = this.id - 1;
       switch (this.board[this.id - 1]) {
         case "left":
-          if (this.turn[0].turn) {
+          if (this.turn[0].turn) { //そのコマの持ち主かどうか
             this.$emit("click-piece", this.id, destinationList);
           }
           break;
@@ -69,9 +69,9 @@ export default {
     },
     //行き先を選択した際の処理
     async selectDirection() {
-      if (this.accessDestination(this.id)) {
-        const direction = this.destinationIds.indexOf(this.id);
-        let origin;
+      if (this.accessDestination(this.id)) { //移動可能かどうか
+        const direction = this.destinationIds.indexOf(this.id); //動く方向
+        let origin; //大元のマスを特定
         switch (direction) {
           case 0:
             origin = this.id + 5;
@@ -89,7 +89,7 @@ export default {
         this.$emit("click-square", origin, this.id, direction);
       } else {
         await this.$emit("click-clear");
-        this.selectPiece();
+        this.selectPiece(); //行き先でないコマをクリックしたらそのコマを選択させる
       }
     },
     //行き先のマスかを判定
