@@ -44,6 +44,7 @@ export default {
     },
   },
   methods: {
+    //コマを選択した際の処理
     selectPiece() {
       const destinationList = [];
       destinationList[0] = this.id - 5;
@@ -66,6 +67,7 @@ export default {
           break;
       }
     },
+    //行き先を選択した際の処理
     async selectDirection() {
       if (this.accessDestination(this.id)) {
         const direction = this.destinationIds.indexOf(this.id);
@@ -90,6 +92,7 @@ export default {
         this.selectPiece();
       }
     },
+    //行き先のマスかを判定
     accessDestination(i) {
       if (this.destinationIds[0] === i && this.access[0]) {
         return true;

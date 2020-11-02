@@ -1,5 +1,7 @@
 # ostle
 
+こちらはボードゲーム Ostle のWebアプリです。左の人が先攻。
+
 ## Project setup
 ```
 npm install

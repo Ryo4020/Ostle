@@ -71,20 +71,21 @@ export default {
 
       leftScore: 0,
       rightScore: 0,
-      selectPieceSituation: true,
-      gameSet: false,
-      message: "さんの勝利です",
-      boardSquareList: [],
-      destinationList: [],
-      accessBoardList: [null, null, null, null],
-      keepPiece: "",
-      lastMove: { square: null, direction: null },
+      selectPieceSituation: true, //動かすコマを選ぶ場面ならtrue
+      gameSet: false, //決着がついたときにtrue
+      message: "さんの勝利です", //勝利メッセ
+      boardSquareList: [], //盤面情報の入った二次元配列
+      destinationList: [], //行き先リスト（上、右、下、左の順）
+      accessBoardList: [null, null, null, null], //行き先に動かせるならtrue
+      keepPiece: "", //コマを入れ替える際の避難場所
+      lastMove: { square: null, direction: null }, //一個前の動きを保存
     };
   },
   created() {
     this.setStartBoard();
   },
   computed: {
+    //ターンの人側の字が光る
     changeLampVClass() {
       return this.playerList[0].turn ? `on` : `off`;
     },
@@ -94,12 +95,12 @@ export default {
   },
   watch: {
     gameSet() {
-      if (this.gameSet) {
+      if (this.gameSet) { //ゲーム終了時
         this.message =
           this.leftScore === 2
             ? this.playerList[0].name + this.message
             : this.playerList[1].name + this.message;
-      } else {
+      } else { //リセット
         this.setStartBoard();
         this.leftScore = 0;
         this.rightScore = 0;
@@ -113,6 +114,7 @@ export default {
     changeName(index, value) {
       this.playerList[index - 1].name = value;
     },
+    //二次元配列作成
     setStartBoard() {
       for (let i = 0; i < 25; i++) {
       if (i % 5 === 0) {
@@ -126,6 +128,7 @@ export default {
       }
     }
     },
+    //コマをクリックした際の処理
     async selectPiece(squareId, destinations) {
       for (let i = 0; i < 4; i++) {
         const target = this.boardSquareList[squareId - 1];
@@ -143,6 +146,7 @@ export default {
       this.keepPiece = "";
       // console.log(this.accessBoardList);
     },
+    //行き先をクリックした際の処理
     selectDirection(originId, squareId, directionId) {
       switch (this.boardSquareList[squareId - 1]) {
         case "":
@@ -163,6 +167,7 @@ export default {
         this.playerList[i].turn = !this.playerList[i].turn;
       }
     },
+    //行き先にコマがあった際の処理
     async movePiece(activeId, passiveId, directionId) {
       const nextId = this.getNextSquare(passiveId, directionId);
       const target = this.boardSquareList[passiveId - 1];
@@ -188,6 +193,7 @@ export default {
         this.lastMove = { square: null, direction: null };
       }
     },
+    //動かす先のマスの数字を取得
     getNextSquare(id, key) {
       switch (key) {
         case 0:
@@ -200,6 +206,7 @@ export default {
           return id - 1;
       }
     },
+    //行き先のコマが消えない際の処理
     continuePiece(activeId, passiveId, target, directionId) {
       switch (this.boardSquareList[passiveId - 1]) {
         case "":
@@ -213,10 +220,12 @@ export default {
           break;
       }
     },
+    //コマ選択後に行き先以外をクリックした際の処理
     clearSelect() {
       this.accessBoardList = [null, null, null, null];
       this.selectPieceSituation = true;
     },
+    //点数が入った時
     calcScore(lostPieceId) {
       const lost = this.boardSquareList[lostPieceId - 1];
       if (lost === "left") {
@@ -227,6 +236,7 @@ export default {
         this.gameSet = this.leftScore > 1 ? true : false;
       }
     },
+    //RESETボタンの処理
     resetGame() {
       this.gameSet = false;
     }
