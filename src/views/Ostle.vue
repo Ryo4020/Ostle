@@ -244,7 +244,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scopped>
+<style lang="scss" scoped>
 .center {
   text-align: center;
 }
